@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter,
   Navigate,
@@ -12,6 +12,7 @@ import { ClientsListPage } from './pages/ClientsListPage';
 import { PipelinePage } from './pages/PipelinePage';
 import { ClientDetailPage } from './pages/ClientDetailPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { DisclaimerToast } from './components/DisclaimerToast';
 
 const ProtectedRoute: React.FC<{
   children: React.ReactNode;
@@ -43,40 +44,53 @@ const ProtectedRoute: React.FC<{
   return <>{children}</>;
 };
 
+function AppContent() {
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
+
+  return (
+    <>
+      {showDisclaimer && (
+        <DisclaimerToast onClose={() => setShowDisclaimer(false)} />
+      )}
+      <Routes>
+        {/* Public login route */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Protected Application Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/clients" replace />} />
+          <Route path="clients" element={<ClientsListPage />} />
+          <Route path="clients/:id" element={<ClientDetailPage />} />
+          <Route path="pipeline" element={<PipelinePage />} />
+          <Route
+            path="settings"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/clients" replace />} />
+      </Routes>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Routes>
-          {/* Public login route */}
-          <Route path="/login" element={<LoginPage />} />
-
-          {/* Protected Application Routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <AppLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="/clients" replace />} />
-            <Route path="clients" element={<ClientsListPage />} />
-            <Route path="clients/:id" element={<ClientDetailPage />} />
-            <Route path="pipeline" element={<PipelinePage />} />
-            <Route
-              path="settings"
-              element={
-                <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
-                  <SettingsPage />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/clients" replace />} />
-        </Routes>
+        <AppContent />
       </BrowserRouter>
     </AuthProvider>
   );
