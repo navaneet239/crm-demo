@@ -99,10 +99,10 @@ export const DisclaimerToast: React.FC<DisclaimerToastProps> = ({ onClose }) => 
             <div className="text-[11px] text-[#5C6880]/80 pt-2 border-t border-[#F0F4F9] flex items-center gap-1">
               <span>Issues?</span>
               <a 
-                href="mailto:hello@jnavaneet.in" 
+                href="mailto:hi@jnavaneet.in" 
                 className="text-[#004080] font-semibold hover:underline transition-all"
               >
-                hello@jnavaneet.in
+                hi@jnavaneet.in
               </a>
             </div>
           </div>
